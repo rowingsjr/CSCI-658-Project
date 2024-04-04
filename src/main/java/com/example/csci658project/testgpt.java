@@ -10,55 +10,68 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.paint.CycleMethod;
 import javafx.stage.Stage;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
-public class testgpt extends Application {
+public class testgpt extends Application
+{
+
+    private boolean isHeld = false;
+    private Timeline holdTimer;
 
     @Override
     public void start(Stage primaryStage) {
-        Button button = new Button("3D Button");
+        Label label = new Label("Click and Hold for 5 seconds");
+        label.setStyle("-fx-font-size: 24px;");
 
-        // Apply a gradient background
-        LinearGradient gradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#f0ff35")),
-                new Stop(1, Color.web("#a9ff00")));
-        button.setStyle("-fx-background-color: linear-gradient(#f0ff35, #a9ff00), radial-gradient(center 50% -40%, radius 200%, #b8ee36 45%, #fbff8f 50%); " +
-                "-fx-background-radius: 6, 5; " +
-                "-fx-background-insets: 0, 1; " +
-                "-fx-text-fill: #395306;");
+        StackPane root = new StackPane();
+        root.getChildren().add(label);
 
-        // Apply a drop shadow effect
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.rgb(0, 0, 0, 0.6));
-        shadow.setOffsetX(0);
-        shadow.setOffsetY(1);
-        shadow.setRadius(5);
-        button.setEffect(shadow);
-
-        // Changing the shadow on hover to enhance the 3D effect
-        button.setOnMouseEntered(e -> {
-            shadow.setOffsetX(0);
-            shadow.setOffsetY(2);
-            shadow.setRadius(10);
-            shadow.setColor(Color.rgb(0, 0, 0, 0.7));
-        });
-
-        // Reverting the shadow when the mouse exits
-        button.setOnMouseExited(e -> {
-            shadow.setOffsetX(0);
-            shadow.setOffsetY(1);
-            shadow.setRadius(5);
-            shadow.setColor(Color.rgb(0, 0, 0, 0.6));
-        });
-
-        StackPane root = new StackPane(button);
         Scene scene = new Scene(root, 300, 200);
-        primaryStage.setTitle("3D Button");
+
+        // Mouse Pressed Event Handler
+        scene.setOnMousePressed(event -> {
+            isHeld = true;
+            startHoldTimer();
+        });
+
+        // Mouse Released Event Handler
+        scene.setOnMouseReleased(event -> {
+            isHeld = false;
+            resetHoldTimer();
+        });
+
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Click and Hold Event Example");
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void startHoldTimer() {
+        holdTimer = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+            if (isHeld) {
+                System.out.println("Click and Hold event triggered!");
+                // Perform your desired action here
+            }
+        }));
+        holdTimer.setCycleCount(1);
+        holdTimer.play();
     }
-}
+
+    private void resetHoldTimer() {
+        if (holdTimer != null) {
+            holdTimer.stop();
+            holdTimer = null;
+        }
+    }
+
+        public static void main(String[] args) {
+            launch(args);
+        }
+    }
 

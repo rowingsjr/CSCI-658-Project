@@ -1,6 +1,8 @@
 package com.example.csci658project;
 
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,6 +39,9 @@ public class SATMApplication extends Application
     private double balance = 3500.00;
     private double deposit = 0.00;
     private double withdrawal = 0.00;
+    private boolean isHeld = false;
+    private Timeline holdTimer;
+    private boolean timerDone = false;
     @Override
     public void start(Stage satmFrame) throws Exception
     {
@@ -326,18 +331,21 @@ public class SATMApplication extends Application
         cardSlot.setTranslateY(55);
 
         // Set the event handler for the cardSlot button
-        cardSlot.setOnAction(event -> {
+        cardSlot.setOnMousePressed(mouseEvent ->
+        {
             cardSlot.setStyle(clickedStyle);
-            updateScreenContent("Processing...\nPlease Wait", Color.DARKGRAY);
-            // Reset the button's style back to the original after a brief moment
+            updateScreenContent("Please leave your ATM card in.", Color.DARKGRAY);
+            isHeld = true;
+            startHoldTimer();
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> cardSlot.setStyle(originalStyle));
             clickPause.play();
+        });
 
-            // Transition to PIN entry after 5 seconds
-            PauseTransition pause = new PauseTransition(Duration.seconds(5));
-            pause.setOnFinished(e -> promptForPin());
-            pause.play();
+        cardSlot.setOnMouseReleased(mouseEvent ->
+        {
+            isHeld = false;
+            resetHoldTimer();
         });
 
 
@@ -619,9 +627,51 @@ public class SATMApplication extends Application
         }
         text.setText(display.toString().trim()); // Update the text to show the visual PIN
         count = count + 1;
+    }
+
+    private void startHoldTimer()
+    {
+        holdTimer = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+            if (isHeld)
+            {
+                timerDone = true;
+                updateScreenContent("Please removed your ATM card.", Color.DARKGRAY);
+                // Reset the button's style back to the original after a brief moment
+                // Transition to PIN entry after 5 seconds
+                PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+                pause.setOnFinished(e -> updateScreenContent("Processing...\nPlease Wait", Color.DARKGRAY));
+                pause.play();
+
+
+                // Transition to PIN entry after 5 seconds
+                PauseTransition pause2 = new PauseTransition(Duration.seconds(3.5));
+                pause2.setOnFinished(e -> promptForPin());
+                pause2.play();
+            }
+        }));
+        holdTimer.setCycleCount(1);
+        holdTimer.play();
 
 
     }
+
+    private void resetHoldTimer() {
+        if (holdTimer != null && !timerDone) {
+            holdTimer.stop();
+            holdTimer = null;
+            updateScreenContent("Invalid ATM card. It will be retained.", Color.DARKGRAY);
+            // Reset the button's style back to the original after a brief moment
+            PauseTransition pause = new PauseTransition(Duration.seconds(2.5));
+            pause.setOnFinished(e -> {
+                String welcomeMessage = "Welcome to\n\nO.I.G. Credit Union\n\nPlease insert your Platinum ATM card";
+                updateScreenContent(welcomeMessage, Color.rgb(32, 115, 69));
+            });
+            pause.play();
+        }
+        timerDone = false;
+    }
+
+
 
     public static void main (String[] args)
     {
