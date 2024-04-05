@@ -42,6 +42,9 @@ public class SATMApplication extends Application
     private boolean isHeld = false;
     private Timeline holdTimer;
     private boolean timerDone = false;
+    private boolean depositFlag = false;
+    private boolean withdrawalFlag = false;
+    private boolean enterButtonPressed = false;
     @Override
     public void start(Stage satmFrame) throws Exception
     {
@@ -102,6 +105,18 @@ public class SATMApplication extends Application
         b7.setPrefWidth(50);
         b7.setPrefHeight(50);
         b7.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
+        b7.setOnMouseClicked(mouseEvent ->
+        {
+            depositFlag = true;
+            b7.setStyle(clickedStyle);
+            updateScreenContent("Enter amount.\nWithdrawals must be multiples of $10",
+                    Color.rgb(32, 115, 69));
+            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+            clickPause.setOnFinished(e -> b7.setStyle(originalStyle));
+            clickPause.play();
+
+
+        });
 
         Button b8 = new Button();
         b8.setPrefWidth(50);
@@ -134,15 +149,12 @@ public class SATMApplication extends Application
 
         // Create a square using a Rectangle shape
         square = new Rectangle(500, 300);
-        //square.setFill(Color.rgb(32,115,69));
         square.setArcWidth(20);
         square.setArcHeight(20);
         square.setTranslateY(-150);
 
         // Create the multiline text
         text = new Text("Welcome to\n\nO.I.G. Credit Union\n\nPlease insert your Platinum ATM card");
-        //text.setFont(Font.font("Georgia", 35));
-        //text.setFill(Color.WHITE);
         text.setTextAlignment(TextAlignment.CENTER);
         text.setWrappingWidth(square.getWidth() - 20); // Adjust the wrapping width
         text.setTranslateY(-150);
@@ -165,7 +177,14 @@ public class SATMApplication extends Application
         n1.setOnMouseClicked(mouseEvent ->
         {
             n1.setStyle(clickedStyle);
-            handleNumberPress("1");
+            if(depositFlag == false && withdrawalFlag == false)
+            {
+                handleNumberPress("1");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("1");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
             clickPause.play();
@@ -179,7 +198,10 @@ public class SATMApplication extends Application
         n2.setOnMouseClicked(mouseEvent ->
         {
             n2.setStyle(clickedStyle);
-            handleNumberPress("2");
+            if(depositFlag == false)
+            {
+                handleNumberPress("2");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
             clickPause.play();
@@ -193,7 +215,10 @@ public class SATMApplication extends Application
         n3.setOnMouseClicked(mouseEvent ->
         {
             n3.setStyle(clickedStyle);
-            handleNumberPress("3");
+            if(depositFlag == false)
+            {
+                handleNumberPress("3");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
             clickPause.play();
@@ -207,7 +232,10 @@ public class SATMApplication extends Application
         n4.setOnMouseClicked(mouseEvent ->
         {
             n4.setStyle(clickedStyle);
-            handleNumberPress("4");
+            if(depositFlag == false)
+            {
+                handleNumberPress("4");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
             clickPause.play();
@@ -221,7 +249,10 @@ public class SATMApplication extends Application
         n5.setOnMouseClicked(mouseEvent ->
         {
             n5.setStyle(clickedStyle);
-            handleNumberPress("5");
+            if(depositFlag == false)
+            {
+                handleNumberPress("5");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
             clickPause.play();
@@ -235,7 +266,10 @@ public class SATMApplication extends Application
         n6.setOnMouseClicked(mouseEvent ->
         {
             n6.setStyle(clickedStyle);
-            handleNumberPress("6");
+            if(depositFlag == false)
+            {
+                handleNumberPress("6");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
             clickPause.play();
@@ -249,7 +283,10 @@ public class SATMApplication extends Application
         n7.setOnMouseClicked(mouseEvent ->
         {
             n7.setStyle(clickedStyle);
-            handleNumberPress("7");
+            if(depositFlag == false)
+            {
+                handleNumberPress("7");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
             clickPause.play();
@@ -263,7 +300,10 @@ public class SATMApplication extends Application
         n8.setOnMouseClicked(mouseEvent ->
         {
             n8.setStyle(clickedStyle);
-            handleNumberPress("8");
+            if(depositFlag == false)
+            {
+                handleNumberPress("8");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
             clickPause.play();
@@ -277,7 +317,10 @@ public class SATMApplication extends Application
         n9.setOnMouseClicked(mouseEvent ->
         {
             n9.setStyle(clickedStyle);
-            handleNumberPress("9");
+            if(depositFlag == false)
+            {
+                handleNumberPress("9");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
             clickPause.play();
@@ -291,7 +334,10 @@ public class SATMApplication extends Application
         n0.setOnMouseClicked(mouseEvent ->
         {
             n0.setStyle(clickedStyle);
-            handleNumberPress("0");
+            if(depositFlag == false)
+            {
+                handleNumberPress("0");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
             clickPause.play();
@@ -360,6 +406,7 @@ public class SATMApplication extends Application
         enterButton.setTranslateY(105);
         enterButton.setOnMouseClicked(mouseEvent ->
         {
+            enterButtonPressed = true;
             enterButton.setStyle(clickedStyle);
             // Reset the button's style back to the original after a brief moment
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
@@ -669,6 +716,25 @@ public class SATMApplication extends Application
             pause.play();
         }
         timerDone = false;
+    }
+
+    private void depositAmt(String num)
+    {
+        String depositString = "";
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        if(enterButtonPressed == false)
+        {
+            depositString += num;
+        }
+        else
+        {
+            //decimalFormat.format(depositString);
+            deposit = Double.parseDouble(depositString);
+            balance = balance + deposit;
+            updateScreenContent("Please insert deposit into deposit slot", Color.rgb(32, 115, 69));
+
+        }
+
     }
 
 
