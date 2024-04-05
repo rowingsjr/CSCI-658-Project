@@ -45,6 +45,7 @@ public class SATMApplication extends Application
     private boolean depositFlag = false;
     private boolean withdrawalFlag = false;
     private boolean enterButtonPressed = false;
+    private String depositString = "";
     @Override
     public void start(Stage satmFrame) throws Exception
     {
@@ -406,7 +407,22 @@ public class SATMApplication extends Application
         enterButton.setTranslateY(105);
         enterButton.setOnMouseClicked(mouseEvent ->
         {
-            enterButtonPressed = true;
+            int enterCount = 0;
+            enterCount = enterCount + 1;
+            if(enterCount == 2)
+            {
+                enterButtonPressed = true;
+                depositAmt(depositString);
+            }
+            else if (enterCount == 3)
+            {
+                enterButtonPressed = true;
+
+            }
+            else
+            {
+                enterButtonPressed = false;
+            }
             enterButton.setStyle(clickedStyle);
             // Reset the button's style back to the original after a brief moment
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
@@ -720,7 +736,6 @@ public class SATMApplication extends Application
 
     private void depositAmt(String num)
     {
-        String depositString = "";
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if(enterButtonPressed == false)
         {
@@ -728,7 +743,7 @@ public class SATMApplication extends Application
         }
         else
         {
-            //decimalFormat.format(depositString);
+            decimalFormat.format(depositString);
             deposit = Double.parseDouble(depositString);
             balance = balance + deposit;
             updateScreenContent("Please insert deposit into deposit slot", Color.rgb(32, 115, 69));
