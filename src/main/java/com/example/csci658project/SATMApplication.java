@@ -9,10 +9,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -22,7 +24,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
@@ -47,21 +51,56 @@ public class SATMApplication extends Application
     private boolean enterButtonPressed = false;
     private String depositString = "";
     private int enterCount = 0;
+    private String withdrawalString = "";
+    private double numCheck = 0.0;
+    private boolean chuteClear = false;
+    private boolean transactionFlag = false;
+    private Stage receiptWindow;
+    private Rectangle cashDispenser;
     @Override
     public void start(Stage satmFrame) throws Exception
     {
+        receiptWindow = satmFrame;
         //root framework
         StackPane root = new StackPane();
 
-        Button b1 = new Button();
+        Button b1 = new Button("YES");
         b1.setPrefWidth(50);
         b1.setPrefHeight(50);
         b1.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
+        b1.setOnMouseClicked(mouseEvent ->
+        {
+            b1.setStyle(clickedStyle);
+            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+            clickPause.setOnFinished(e -> b1.setStyle(originalStyle));
+            clickPause.play();
 
-        Button b2 = new Button();
+            updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >" +
+                            "\n\nwithdrawal >",
+                    Color.rgb(32, 115, 69));
+
+
+        });
+
+
+        Button b2 = new Button("NO");
         b2.setPrefWidth(50);
         b2.setPrefHeight(50);
         b2.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
+        b2.setOnMouseClicked(mouseEvent ->
+        {
+            b2.setStyle(clickedStyle);
+            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+            clickPause.setOnFinished(e -> b2.setStyle(originalStyle));
+            clickPause.play();
+            updateScreenContent("Please take your receipt and ATM card.\nThank you.\nHave a nice day.",
+                    Color.rgb(32, 115, 69));
+            if(transactionFlag == true)
+            {
+                printReciept();
+            }
+
+        });
 
         Button b3 = new Button();
         b3.setPrefWidth(50);
@@ -85,7 +124,7 @@ public class SATMApplication extends Application
         b6.setOnMouseClicked(mouseEvent ->
         {
             b6.setStyle(clickedStyle);
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
             String balString = decimalFormat.format(balance);
             updateScreenContent("Balance is:\n" + "$" +balString,
                     Color.rgb(32, 115, 69));
@@ -111,7 +150,7 @@ public class SATMApplication extends Application
         {
             depositFlag = true;
             b7.setStyle(clickedStyle);
-            updateScreenContent("Enter amount.\nWithdrawals must be multiples of $10",
+            updateScreenContent("Enter amount you want to deposit.",
                     Color.rgb(32, 115, 69));
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> b7.setStyle(originalStyle));
@@ -124,6 +163,18 @@ public class SATMApplication extends Application
         b8.setPrefWidth(50);
         b8.setPrefHeight(50);
         b8.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
+        b8.setOnMouseClicked(mouseEvent ->
+        {
+            withdrawalFlag = true;
+            b8.setStyle(clickedStyle);
+            updateScreenContent("Enter amount.\nWithdrawals must be multiples of $10",
+                    Color.rgb(32, 115, 69));
+            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+            clickPause.setOnFinished(e -> b8.setStyle(originalStyle));
+            clickPause.play();
+
+
+        });
 
         GridPane buttonGridLeft = new GridPane(0,10);
         buttonGridLeft.setPadding(new Insets(10));
@@ -170,6 +221,18 @@ public class SATMApplication extends Application
         printReceipt.setFont(new Font(18));
         printReceipt.setTranslateX(-245);
         printReceipt.setTranslateY(55);
+        printReceipt.setOnMouseClicked(mouseEvent ->
+        {
+            printReceipt.setStyle(clickedStyle);
+            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+            clickPause.setOnFinished(e -> printReceipt.setStyle(originalStyle));
+            clickPause.play();
+            if(transactionFlag == true)
+            {
+                printReciept();
+            }
+
+        });
 
         //numberpad grid pane
         Button n1 = new Button("1");
@@ -187,6 +250,10 @@ public class SATMApplication extends Application
             {
                 depositAmt("1");
             }
+            else
+            {
+                withdrawalAmt("1");
+            }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
             clickPause.play();
@@ -200,9 +267,17 @@ public class SATMApplication extends Application
         n2.setOnMouseClicked(mouseEvent ->
         {
             n2.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("2");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("2");
+            }
+            else
+            {
+                withdrawalAmt("2");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
@@ -217,9 +292,17 @@ public class SATMApplication extends Application
         n3.setOnMouseClicked(mouseEvent ->
         {
             n3.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("3");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("3");
+            }
+            else
+            {
+                withdrawalAmt("3");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
@@ -234,9 +317,17 @@ public class SATMApplication extends Application
         n4.setOnMouseClicked(mouseEvent ->
         {
             n4.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("4");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("4");
+            }
+            else
+            {
+                withdrawalAmt("4");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
@@ -251,9 +342,17 @@ public class SATMApplication extends Application
         n5.setOnMouseClicked(mouseEvent ->
         {
             n5.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("5");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("5");
+            }
+            else
+            {
+                withdrawalAmt("5");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
@@ -268,9 +367,17 @@ public class SATMApplication extends Application
         n6.setOnMouseClicked(mouseEvent ->
         {
             n6.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("6");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("6");
+            }
+            else
+            {
+                withdrawalAmt("6");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
@@ -285,9 +392,17 @@ public class SATMApplication extends Application
         n7.setOnMouseClicked(mouseEvent ->
         {
             n7.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("7");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("7");
+            }
+            else
+            {
+                withdrawalAmt("7");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
@@ -302,9 +417,17 @@ public class SATMApplication extends Application
         n8.setOnMouseClicked(mouseEvent ->
         {
             n8.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("8");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("8");
+            }
+            else
+            {
+                withdrawalAmt("8");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
@@ -319,9 +442,17 @@ public class SATMApplication extends Application
         n9.setOnMouseClicked(mouseEvent ->
         {
             n9.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("9");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("9");
+            }
+            else
+            {
+                withdrawalAmt("9");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
@@ -336,9 +467,17 @@ public class SATMApplication extends Application
         n0.setOnMouseClicked(mouseEvent ->
         {
             n0.setStyle(clickedStyle);
-            if(depositFlag == false)
+            if(depositFlag == false && withdrawalFlag == false)
             {
                 handleNumberPress("0");
+            }
+            else if (depositFlag == true && withdrawalFlag == false)
+            {
+                depositAmt("0");
+            }
+            else
+            {
+                withdrawalAmt("0");
             }
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
@@ -409,14 +548,17 @@ public class SATMApplication extends Application
         enterButton.setOnMouseClicked(mouseEvent ->
         {
             enterCount = enterCount + 1;
-            if(enterCount == 2)
+            if(enterCount >= 2 && depositFlag == true)
             {
                 enterButtonPressed = true;
                 depositAmt(depositString);
+                enterButtonPressed = false;
             }
-            else if (enterCount == 3)
+            else if (enterCount >= 2 && withdrawalFlag == true)
             {
                 enterButtonPressed = true;
+                withdrawalAmt(withdrawalString);
+                enterButtonPressed = false;
 
             }
             else
@@ -483,9 +625,13 @@ public class SATMApplication extends Application
         cancelButton.setFont(new Font(18));
         cancelButton.setTranslateX(270);
         cancelButton.setTranslateY(205);
+        cancelButton.setOnMouseClicked(mouseEvent ->
+        {
+            satmFrame.close();
+        });
 
         //Cash Dispenser Rectangle
-        Rectangle cashDispenser = new Rectangle();
+        cashDispenser = new Rectangle();
         cashDispenser.setWidth(350);
         cashDispenser.setHeight(30);
         cashDispenser.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -493,6 +639,11 @@ public class SATMApplication extends Application
         cashDispenser.setArcWidth(20);
         cashDispenser.setTranslateX(-150);
         cashDispenser.setTranslateY(315);
+        cashDispenser.setOnMouseClicked(mouseEvent ->
+        {
+            updateScreenContent("Your balance is ready for printing. Another transation?",
+                    Color.rgb(32, 115, 69));
+        });
 
         //Text for Cash Dispenser
         Text rectText = new Text("Cash Dispenser");
@@ -500,6 +651,11 @@ public class SATMApplication extends Application
         rectText.setFill(Color.WHITE);
         rectText.setTranslateX(-150);
         rectText.setTranslateY(315);
+        rectText.setOnMouseClicked(mouseEvent ->
+        {
+            updateScreenContent("Your balance is ready for printing. Another transation?",
+                    Color.rgb(32, 115, 69));
+        });
 
         //Deposit Slot Button
         Button depositSlot = new Button();
@@ -516,7 +672,7 @@ public class SATMApplication extends Application
             depositSlot.setStyle(clickedStyle);
             updateScreenContent("Counting your deposit.\nPlease wait...", Color.DARKGRAY);
             isHeld = true;
-            startHoldTimer();
+            startHoldTimer2();
             PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
             clickPause.setOnFinished(e -> cardSlot.setStyle(originalStyle));
             clickPause.play();
@@ -524,9 +680,8 @@ public class SATMApplication extends Application
 
         depositSlot.setOnMouseReleased(mouseEvent ->
         {
-            updateScreenContent("Please leave your ATM card in.", Color.DARKGRAY);
             isHeld = false;
-            resetHoldTimer();
+            resetHoldTimer2();
         });
 
 
@@ -595,6 +750,114 @@ public class SATMApplication extends Application
 
         satmFrame.show();
 
+
+    }
+
+    private void withdrawalAmt(String number)
+    {
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+        if(enterButtonPressed == false)
+        {
+            withdrawalString += number;
+            numCheck = Double.parseDouble(withdrawalString);
+        }
+        else
+        {
+            if(numCheck % 10 == 0)
+            {
+                withdrawal = Double.parseDouble(withdrawalString);
+                if(withdrawal > balance)
+                {
+                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                    pause.setOnFinished(e -> updateScreenContent("Insufficient Funds!\nPlease enter a new amount.", Color.DARKGRAY));
+                    pause.play();
+
+
+                    // Transition to PIN entry after 5 seconds
+                    PauseTransition pause2 = new PauseTransition(Duration.seconds(3.5));
+                    pause2.setOnFinished(e -> updateScreenContent("Select transaction:\nbalance >\n\ndeposit >" +
+                                    "\n\nwithdrawal >",
+                            Color.rgb(32, 115, 69)));
+                    pause2.play();
+                    withdrawal = 0.0;
+                    withdrawalString = "";
+                }
+                else
+                {
+                    balance = balance - withdrawal;
+                    transactionFlag = true;
+                    updateScreenContent("Your balance is being updated. Please take cash from dispenser",
+                            Color.rgb(32, 115, 69));
+                    String color1 = "-fx-background-color: #0f770f; -fx-text-fill: #FFFFFF;"; // Red with white text
+                    String color2 = "-fx-background-color: #19191a; -fx-text-fill: #FFFFFF;"; // Blue with white text
+
+                    // Create a Timeline to change colors
+                    Timeline blinkTimeline = new Timeline(
+                            new KeyFrame(Duration.seconds(0), e -> cashDispenser.setFill(Color.GREEN)),
+                            new KeyFrame(Duration.seconds(.5), e -> cashDispenser.setFill(Color.BLACK))
+                    );
+                    blinkTimeline.setCycleCount(Timeline.INDEFINITE);
+                    blinkTimeline.setAutoReverse(true);
+                    // Start the animation
+                    blinkTimeline.play();
+
+                    // Stop the blinking after 4 seconds using a PauseTransition
+                    PauseTransition stopBlinking = new PauseTransition(Duration.seconds(4));
+                    stopBlinking.setOnFinished(event -> blinkTimeline.stop());
+                    stopBlinking.play();
+                    withdrawalFlag = false;
+                }
+
+            }
+            else
+            {
+                PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                pause.setOnFinished(e -> updateScreenContent("Machine can only dispense $10 notes.", Color.DARKGRAY));
+                pause.play();
+
+
+                // Transition to PIN entry after 5 seconds
+                PauseTransition pause2 = new PauseTransition(Duration.seconds(3.5));
+                pause2.setOnFinished(e -> updateScreenContent("Select transaction:\nbalance >\n\ndeposit >" +
+                                "\n\nwithdrawal >",
+                        Color.rgb(32, 115, 69)));
+                pause2.play();
+                withdrawalString = "";
+                numCheck = 0.0;
+            }
+
+
+
+        }
+
+    }
+
+    private void printReciept()
+    {
+        // Create a new Stage for the pop-up
+        Stage receiptStage = new Stage();
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+        String receiptText = "Account: *****0504\n" +
+                             "Original Balance: $" + decimalFormat.format(balance + withdrawal - deposit) + "\n" +
+                             "Deposits: +$" + decimalFormat.format(deposit) + "\n" +
+                             "Withdrawals: -$" + decimalFormat.format(withdrawal) + "\n" +
+                             "Total Remaining Balance: $" + decimalFormat.format(balance);
+
+        // Make it modal so it blocks interaction with the main application until closed
+        receiptStage.initModality(Modality.APPLICATION_MODAL);
+        receiptStage.initOwner(receiptWindow); // Set the owner of the pop-up to the main application window
+        receiptStage.initStyle(StageStyle.UTILITY); // Give it a 'utility' style
+
+        // Create the content for the pop-up
+        VBox content = new VBox(10);
+        content.getChildren().add(new Label(receiptText));
+
+        // Optional: Add a button or other controls to the content as needed
+
+        // Set the scene and show the stage
+        receiptStage.setScene(new Scene(content, 300, 200)); // Adjust size as needed
+        receiptStage.setTitle("*****CUSTOMER RECEIPT*****"); // Set the title of the pop-up window
+        receiptStage.showAndWait(); // Show the pop-up and wait for it to be closed before returning to the application
 
     }
 
@@ -752,6 +1015,56 @@ public class SATMApplication extends Application
         timerDone = false;
     }
 
+    private void startHoldTimer2()
+    {
+        holdTimer = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+            if (isHeld)
+            {
+                timerDone = true;
+                updateScreenContent("Deposit Received!", Color.DARKGRAY);
+                // Reset the button's style back to the original after a brief moment
+                // Transition to PIN entry after 5 seconds
+                PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+                pause.setOnFinished(e -> updateScreenContent("Processing...\nPlease Wait", Color.DARKGRAY));
+                pause.play();
+
+                String balanceString = "";
+                DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+                balanceString = decimalFormat.format(balance);
+                PauseTransition pause2 = new PauseTransition(Duration.seconds(2.5));
+                String finalBalanceString = balanceString;
+                pause2.setOnFinished(e -> updateScreenContent("Your new balance is:\n\n$" + finalBalanceString +
+                                "\n\nAnother transaction?",
+                        Color.rgb(32, 115, 69)));
+                pause2.play();
+            }
+
+        }));
+        holdTimer.setCycleCount(1);
+        holdTimer.play();
+
+
+    }
+
+    private void resetHoldTimer2() {
+        if (holdTimer != null && !timerDone) {
+            holdTimer.stop();
+            holdTimer = null;
+            updateScreenContent("Temporarily unable to process deposits.\nAnother transaction?", Color.DARKGRAY);
+            // Reset the button's style back to the original after a brief moment
+            PauseTransition pause = new PauseTransition(Duration.seconds(2.5));
+            pause.setOnFinished(e ->
+            {
+
+            });
+            pause.play();
+            deposit = 0.0;
+            depositString = "";
+        }
+        timerDone = false;
+
+    }
+
     private void depositAmt(String num)
     {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -765,7 +1078,8 @@ public class SATMApplication extends Application
             deposit = Double.parseDouble(depositString);
             balance = balance + deposit;
             updateScreenContent("Please insert deposit into deposit slot", Color.rgb(32, 115, 69));
-
+            depositFlag = false;
+            transactionFlag = true;
         }
 
     }
