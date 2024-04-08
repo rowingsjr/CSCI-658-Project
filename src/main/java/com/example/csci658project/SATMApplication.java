@@ -548,13 +548,13 @@ public class SATMApplication extends Application
         enterButton.setOnMouseClicked(mouseEvent ->
         {
             enterCount = enterCount + 1;
-            if(enterCount >= 2 && depositFlag == true)
+            if(enterCount >= 2 && depositFlag)
             {
                 enterButtonPressed = true;
                 depositAmt(depositString);
                 enterButtonPressed = false;
             }
-            else if (enterCount >= 2 && withdrawalFlag == true)
+            else if (enterCount >= 2 && !withdrawalFlag)
             {
                 enterButtonPressed = true;
                 withdrawalAmt(withdrawalString);
@@ -755,8 +755,7 @@ public class SATMApplication extends Application
 
     private void withdrawalAmt(String number)
     {
-        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-        if(enterButtonPressed == false)
+        if(!enterButtonPressed)
         {
             withdrawalString += number;
             numCheck = Double.parseDouble(withdrawalString);
@@ -788,8 +787,6 @@ public class SATMApplication extends Application
                     transactionFlag = true;
                     updateScreenContent("Your balance is being updated. Please take cash from dispenser",
                             Color.rgb(32, 115, 69));
-                    String color1 = "-fx-background-color: #0f770f; -fx-text-fill: #FFFFFF;"; // Red with white text
-                    String color2 = "-fx-background-color: #19191a; -fx-text-fill: #FFFFFF;"; // Blue with white text
 
                     // Create a Timeline to change colors
                     Timeline blinkTimeline = new Timeline(
@@ -1067,14 +1064,12 @@ public class SATMApplication extends Application
 
     private void depositAmt(String num)
     {
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        if(enterButtonPressed == false)
+        if(!enterButtonPressed)
         {
             depositString += num;
         }
         else
         {
-            //decimalFormat.format(depositString);
             deposit = Double.parseDouble(depositString);
             balance = balance + deposit;
             updateScreenContent("Please insert deposit into deposit slot", Color.rgb(32, 115, 69));
