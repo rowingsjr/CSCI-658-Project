@@ -33,28 +33,28 @@ import java.text.DecimalFormat;
 
 public class SATMApplication extends Application
 {
-    private Rectangle square; // The 'screen' of the ATM
-    private Text text; // The text displayed on the 'screen'
+    Rectangle square; // The 'screen' of the ATM
+    Text text; // The text displayed on the 'screen'
     String originalStyle = "-fx-background-color: #282928; -fx-text-fill: #FFFFFF;";
     String clickedStyle = "-fx-background-color: #8F9494FF; -fx-text-fill: #FFFFFF;";
-    private String pin = "";
+    String pin = "";
     private String correctPin = "1906";
-    private int count;
-    private double balance = 3500.00;
-    private double deposit = 0.00;
-    private double withdrawal = 0.00;
-    private boolean isHeld = false;
-    private Timeline holdTimer;
-    private boolean timerDone = false;
-    private boolean depositFlag = false;
+    int count;
+    double balance = 3500.00;
+    double deposit = 0.00;
+    double withdrawal = 0.00;
+    boolean isHeld = false;
+    Timeline holdTimer;
+    boolean timerDone = false;
+    boolean depositFlag = false;
     private boolean withdrawalFlag = false;
-    private boolean enterButtonPressed = false;
-    private String depositString = "";
+    boolean enterButtonPressed = false;
+    String depositString = "";
     private int enterCount = 0;
-    private String withdrawalString = "";
-    private double numCheck = 0.0;
+    String withdrawalString = "";
+    double numCheck = 0.0;
     private boolean chuteClear = false;
-    private boolean transactionFlag = false;
+    boolean transactionFlag = false;
     private double orgBalance = 0.0;
     private boolean processFlag = false;
     private Stage receiptWindow;
@@ -902,7 +902,7 @@ public class SATMApplication extends Application
 
     }
 
-    private void withdrawalAmt(String number)
+    void withdrawalAmt(String number)
     {
         if(!enterButtonPressed)
         {
@@ -979,7 +979,7 @@ public class SATMApplication extends Application
 
     }
 
-    private void printReceipt()
+    void printReceipt()
     {
         // Create a new Stage for the pop-up
         Stage receiptStage = new Stage();
@@ -1077,25 +1077,25 @@ public class SATMApplication extends Application
         ));
     }
 
-    private void updateScreenContent(String newText, Color backgroundColor) {
+    void updateScreenContent(String newText, Color backgroundColor) {
         text.setText(newText); // Update the text
         square.setFill(backgroundColor); // Update the background color of the screen
         // If you have other styles/effects, update them here as needed
     }
 
-    private void updateTransactionScreen(String newText, Color backgroundColor) {
+    void updateTransactionScreen(String newText, Color backgroundColor) {
         text.setText(newText); // Update the text
         text.setTextAlignment(TextAlignment.RIGHT);
         square.setFill(backgroundColor); // Update the background color of the screen
         // If you have other styles/effects, update them here as needed
     }
 
-    private void promptForPin() {
+    void promptForPin() {
         // This will be called after the "Processing..." message
         updateScreenContent("Please enter your PIN\n_ _ _ _", Color.rgb(32, 115, 69)); // Original screen color
     }
 
-    private void handleNumberPress(String number)
+    void handleNumberPress(String number)
     {
         if (pin.length() < 4)
         {
@@ -1105,7 +1105,7 @@ public class SATMApplication extends Application
         }
     }
 
-    private void updatePinDisplay()
+    void updatePinDisplay()
     {
         // Assuming the PIN entry prompt is on the next line after some text, e.g., "Please enter your PIN"
         String[] lines = text.getText().split("\n");
@@ -1120,7 +1120,7 @@ public class SATMApplication extends Application
         count = count + 1;
     }
 
-    private void startHoldTimer()
+    void startHoldTimer()
     {
         holdTimer = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
             if (isHeld)
@@ -1147,7 +1147,7 @@ public class SATMApplication extends Application
 
     }
 
-    private void resetHoldTimer() {
+    void resetHoldTimer() {
         if (holdTimer != null && !timerDone) {
             holdTimer.stop();
             holdTimer = null;
@@ -1164,7 +1164,7 @@ public class SATMApplication extends Application
         //processFlag = false;
     }
 
-    private void startHoldTimer2()
+    void startHoldTimer2()
     {
         holdTimer = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
             if (isHeld)
@@ -1193,7 +1193,7 @@ public class SATMApplication extends Application
 
     }
 
-    private void resetHoldTimer2() {
+    void resetHoldTimer2() {
         if (holdTimer != null && !timerDone) {
             holdTimer.stop();
             holdTimer = null;
@@ -1212,7 +1212,7 @@ public class SATMApplication extends Application
 
     }
 
-    private void depositAmt(String num)
+    void depositAmt(String num)
     {
         if(!enterButtonPressed)
         {
