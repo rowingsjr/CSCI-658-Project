@@ -55,11 +55,14 @@ public class SATMApplication extends Application
     private double numCheck = 0.0;
     private boolean chuteClear = false;
     private boolean transactionFlag = false;
+    private double orgBalance = 0.0;
+    private boolean processFlag = false;
     private Stage receiptWindow;
     private Rectangle cashDispenser;
     @Override
     public void start(Stage satmFrame) throws Exception
     {
+        orgBalance = balance;
         receiptWindow = satmFrame;
         //root framework
         StackPane root = new StackPane();
@@ -70,15 +73,17 @@ public class SATMApplication extends Application
         b1.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         b1.setOnMouseClicked(mouseEvent ->
         {
-            b1.setStyle(clickedStyle);
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> b1.setStyle(originalStyle));
-            clickPause.play();
+            if(transactionFlag)
+            {
+                b1.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> b1.setStyle(originalStyle));
+                clickPause.play();
 
-            updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >" +
-                            "\n\nwithdrawal >",
-                    Color.rgb(32, 115, 69));
-
+                updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >" +
+                                "\n\nwithdrawal >",
+                        Color.rgb(32, 115, 69));
+            }
 
         });
 
@@ -89,15 +94,16 @@ public class SATMApplication extends Application
         b2.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         b2.setOnMouseClicked(mouseEvent ->
         {
-            b2.setStyle(clickedStyle);
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> b2.setStyle(originalStyle));
-            clickPause.play();
-            updateScreenContent("Please take your receipt and ATM card.\nThank you.\nHave a nice day.",
-                    Color.rgb(32, 115, 69));
-            if(transactionFlag == true)
+            if(transactionFlag)
             {
-                printReciept();
+                b2.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> b2.setStyle(originalStyle));
+                clickPause.play();
+                updateScreenContent("Please take your receipt and ATM card.\nThank you.\nHave a nice day.",
+                        Color.rgb(32, 115, 69));
+                printReceipt();
+                processFlag = false;
             }
 
         });
@@ -123,21 +129,28 @@ public class SATMApplication extends Application
         b6.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         b6.setOnMouseClicked(mouseEvent ->
         {
-            b6.setStyle(clickedStyle);
-            DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-            String balString = decimalFormat.format(balance);
-            updateScreenContent("Balance is:\n" + "$" +balString,
-                    Color.rgb(32, 115, 69));
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> b6.setStyle(originalStyle));
-            clickPause.play();
+            if(enterCount >= 1)
+            {
+                processFlag = true;
+            }
+            if(processFlag)
+            {
+                b6.setStyle(clickedStyle);
+                DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
+                String balString = decimalFormat.format(balance);
+                updateScreenContent("Balance is:\n" + "$" +balString,
+                        Color.rgb(32, 115, 69));
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> b6.setStyle(originalStyle));
+                clickPause.play();
 
-            // Transition to PIN entry after 5 seconds
-            PauseTransition pause = new PauseTransition(Duration.seconds(5));
-            pause.setOnFinished(e -> updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >" +
-                            "\n\nwithdrawal >",
-                    Color.rgb(32, 115, 69)));
-            pause.play();
+                // Transition to PIN entry after 5 seconds
+                PauseTransition pause = new PauseTransition(Duration.seconds(5));
+                pause.setOnFinished(e -> updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >" +
+                                "\n\nwithdrawal >",
+                        Color.rgb(32, 115, 69)));
+                pause.play();
+            }
 
         });
 
@@ -148,14 +161,20 @@ public class SATMApplication extends Application
         b7.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         b7.setOnMouseClicked(mouseEvent ->
         {
-            depositFlag = true;
-            b7.setStyle(clickedStyle);
-            updateScreenContent("Enter amount you want to deposit.",
-                    Color.rgb(32, 115, 69));
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> b7.setStyle(originalStyle));
-            clickPause.play();
-
+            if(enterCount >= 2)
+            {
+                processFlag = true;
+            }
+            if(processFlag)
+            {
+                depositFlag = true;
+                b7.setStyle(clickedStyle);
+                updateScreenContent("Enter amount you want to deposit.",
+                        Color.rgb(32, 115, 69));
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> b7.setStyle(originalStyle));
+                clickPause.play();
+            }
 
         });
 
@@ -165,14 +184,21 @@ public class SATMApplication extends Application
         b8.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         b8.setOnMouseClicked(mouseEvent ->
         {
-            withdrawalFlag = true;
-            b8.setStyle(clickedStyle);
-            updateScreenContent("Enter amount.\nWithdrawals must be multiples of $10",
-                    Color.rgb(32, 115, 69));
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> b8.setStyle(originalStyle));
-            clickPause.play();
+            if(enterCount >= 2)
+            {
+                processFlag = true;
+            }
 
+            if(processFlag)
+            {
+                withdrawalFlag = true;
+                b8.setStyle(clickedStyle);
+                updateScreenContent("Enter amount.\nWithdrawals must be multiples of $10",
+                        Color.rgb(32, 115, 69));
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> b8.setStyle(originalStyle));
+                clickPause.play();
+            }
 
         });
 
@@ -223,13 +249,14 @@ public class SATMApplication extends Application
         printReceipt.setTranslateY(55);
         printReceipt.setOnMouseClicked(mouseEvent ->
         {
-            printReceipt.setStyle(clickedStyle);
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> printReceipt.setStyle(originalStyle));
-            clickPause.play();
-            if(transactionFlag == true)
+
+            if(transactionFlag)
             {
-                printReciept();
+                printReceipt.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> printReceipt.setStyle(originalStyle));
+                clickPause.play();
+                printReceipt();
             }
 
         });
@@ -241,22 +268,33 @@ public class SATMApplication extends Application
         n1.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n1.setOnMouseClicked(mouseEvent ->
         {
-            n1.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("1");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n1.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("1");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n1.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("1");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n1.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("1");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n1.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -266,22 +304,33 @@ public class SATMApplication extends Application
         n2.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n2.setOnMouseClicked(mouseEvent ->
         {
-            n2.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("2");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n2.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("2");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n2.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("2");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n2.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("2");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n2.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -291,22 +340,33 @@ public class SATMApplication extends Application
         n3.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n3.setOnMouseClicked(mouseEvent ->
         {
-            n3.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("3");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n3.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("3");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n3.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("3");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n3.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("3");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n3.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -316,22 +376,33 @@ public class SATMApplication extends Application
         n4.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n4.setOnMouseClicked(mouseEvent ->
         {
-            n4.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("4");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n4.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("4");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n4.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("4");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n4.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("4");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n4.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -341,22 +412,33 @@ public class SATMApplication extends Application
         n5.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n5.setOnMouseClicked(mouseEvent ->
         {
-            n5.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("5");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n5.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("5");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n5.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("5");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n5.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("5");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n5.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -366,22 +448,33 @@ public class SATMApplication extends Application
         n6.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n6.setOnMouseClicked(mouseEvent ->
         {
-            n6.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("6");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n6.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("6");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n6.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("6");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n6.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("6");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n6.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -391,22 +484,33 @@ public class SATMApplication extends Application
         n7.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n7.setOnMouseClicked(mouseEvent ->
         {
-            n7.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("7");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n7.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("7");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n7.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("7");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n7.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("7");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n7.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -416,22 +520,33 @@ public class SATMApplication extends Application
         n8.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n8.setOnMouseClicked(mouseEvent ->
         {
-            n8.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("8");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n8.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("8");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n8.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("8");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n8.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("8");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n8.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -441,22 +556,33 @@ public class SATMApplication extends Application
         n9.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n9.setOnMouseClicked(mouseEvent ->
         {
-            n9.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("9");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n9.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("9");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n9.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("9");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n9.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("9");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n9.setStyle(originalStyle));
-            clickPause.play();
 
         });
 
@@ -466,22 +592,34 @@ public class SATMApplication extends Application
         n0.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
         n0.setOnMouseClicked(mouseEvent ->
         {
-            n0.setStyle(clickedStyle);
-            if(depositFlag == false && withdrawalFlag == false)
+            if(processFlag)
             {
-                handleNumberPress("0");
+                if (!depositFlag && !withdrawalFlag)
+                {
+                    n0.setStyle(clickedStyle);
+                    PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                    clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
+                    clickPause.play();
+                    handleNumberPress("0");
+                }
             }
-            else if (depositFlag == true && withdrawalFlag == false)
+            if(processFlag && depositFlag && !withdrawalFlag)
             {
+                n0.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
+                clickPause.play();
                 depositAmt("0");
             }
-            else
+            else if (processFlag && withdrawalFlag && !depositFlag)
             {
+                n0.setStyle(clickedStyle);
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
+                clickPause.play();
                 withdrawalAmt("0");
             }
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> n0.setStyle(originalStyle));
-            clickPause.play();
+
 
         });
 
@@ -547,50 +685,46 @@ public class SATMApplication extends Application
         enterButton.setTranslateY(105);
         enterButton.setOnMouseClicked(mouseEvent ->
         {
-            enterCount = enterCount + 1;
-            if(enterCount >= 2 && depositFlag)
+            if(processFlag)
             {
-                enterButtonPressed = true;
-                depositAmt(depositString);
-                enterButtonPressed = false;
-            }
-            else if (enterCount >= 2 && !withdrawalFlag)
-            {
-                enterButtonPressed = true;
-                withdrawalAmt(withdrawalString);
-                enterButtonPressed = false;
+                enterCount = enterCount + 1;
+                if (enterCount >= 2 && depositFlag) {
+                    enterButtonPressed = true;
+                    depositAmt(depositString);
+                    enterButtonPressed = false;
+                    processFlag = false;
+                } else if (enterCount >= 2 && withdrawalFlag) {
+                    enterButtonPressed = true;
+                    withdrawalAmt(withdrawalString);
+                    enterButtonPressed = false;
+                    processFlag = false;
 
-            }
-            else
-            {
-                enterButtonPressed = false;
-            }
-            enterButton.setStyle(clickedStyle);
-            // Reset the button's style back to the original after a brief moment
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> enterButton.setStyle(originalStyle));
-            clickPause.play();
-            if(count == 4)
-            {
-                count = 0;
-                //check if the correct pin is entered
-                if(pin.equals(correctPin))
-                {
-                    //Call Screen 5 - Transaction Screen
-                    updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >\n\nwithdrawal >",
-                            Color.rgb(32, 115, 69));
-                    pin = "";
-                    PauseTransition pause = new PauseTransition(Duration.seconds(1));
-                    pause.play();
+                } else {
+                    enterButtonPressed = false;
                 }
-                else
-                {
-                    updateScreenContent("Your PIN is incorrect. \n Please try again.",
-                            Color.rgb(32, 115, 69));
-                    pin = "";
-                    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-                    pause.setOnFinished(e -> promptForPin());
-                    pause.play();
+                enterButton.setStyle(clickedStyle);
+                // Reset the button's style back to the original after a brief moment
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> enterButton.setStyle(originalStyle));
+                clickPause.play();
+                if (count == 4) {
+                    count = 0;
+                    //check if the correct pin is entered
+                    if (pin.equals(correctPin)) {
+                        //Call Screen 5 - Transaction Screen
+                        updateTransactionScreen("Select transaction:\nbalance >\n\ndeposit >\n\nwithdrawal >",
+                                Color.rgb(32, 115, 69));
+                        pin = "";
+                        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                        pause.play();
+                    } else {
+                        updateScreenContent("Your PIN is incorrect. \n Please try again.",
+                                Color.rgb(32, 115, 69));
+                        pin = "";
+                        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                        pause.setOnFinished(e -> promptForPin());
+                        pause.play();
+                    }
                 }
             }
         });
@@ -605,15 +739,19 @@ public class SATMApplication extends Application
         clearButton.setTranslateX(270);
         clearButton.setTranslateY(155);
         // Set the event handler for the clear button
-        clearButton.setOnAction(event -> {
-            clearButton.setStyle(clickedStyle);
-            pin = "";
-            count = 0;
-            // Reset the button's style back to the original after a brief moment
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> clearButton.setStyle(originalStyle));
-            clickPause.play();
-            promptForPin();
+        clearButton.setOnAction(event ->
+        {
+            if(processFlag)
+            {
+                clearButton.setStyle(clickedStyle);
+                pin = "";
+                count = 0;
+                // Reset the button's style back to the original after a brief moment
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> clearButton.setStyle(originalStyle));
+                clickPause.play();
+                promptForPin();
+            }
         });
 
         //Cancel Button
@@ -627,6 +765,8 @@ public class SATMApplication extends Application
         cancelButton.setTranslateY(205);
         cancelButton.setOnMouseClicked(mouseEvent ->
         {
+            enterCount = 0;
+            count = 0;
             satmFrame.close();
         });
 
@@ -641,8 +781,11 @@ public class SATMApplication extends Application
         cashDispenser.setTranslateY(315);
         cashDispenser.setOnMouseClicked(mouseEvent ->
         {
-            updateScreenContent("Your balance is ready for printing. Another transation?",
-                    Color.rgb(32, 115, 69));
+            if(processFlag)
+            {
+                updateScreenContent("Your balance is ready for printing. Another transaction?",
+                        Color.rgb(32, 115, 69));
+            }
         });
 
         //Text for Cash Dispenser
@@ -653,8 +796,11 @@ public class SATMApplication extends Application
         rectText.setTranslateY(315);
         rectText.setOnMouseClicked(mouseEvent ->
         {
-            updateScreenContent("Your balance is ready for printing. Another transation?",
-                    Color.rgb(32, 115, 69));
+            if(processFlag)
+            {
+                updateScreenContent("Your balance is ready for printing. Another transaction?",
+                        Color.rgb(32, 115, 69));
+            }
         });
 
         //Deposit Slot Button
@@ -669,13 +815,16 @@ public class SATMApplication extends Application
         // Set the event handler for the cardSlot button
         depositSlot.setOnMousePressed(mouseEvent ->
         {
-            depositSlot.setStyle(clickedStyle);
-            updateScreenContent("Counting your deposit.\nPlease wait...", Color.DARKGRAY);
-            isHeld = true;
-            startHoldTimer2();
-            PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
-            clickPause.setOnFinished(e -> cardSlot.setStyle(originalStyle));
-            clickPause.play();
+            if(processFlag)
+            {
+                depositSlot.setStyle(clickedStyle);
+                updateScreenContent("Counting your deposit.\nPlease wait...", Color.DARKGRAY);
+                isHeld = true;
+                startHoldTimer2();
+                PauseTransition clickPause = new PauseTransition(Duration.seconds(0.2));
+                clickPause.setOnFinished(e -> cardSlot.setStyle(originalStyle));
+                clickPause.play();
+            }
         });
 
         depositSlot.setOnMouseReleased(mouseEvent ->
@@ -803,6 +952,7 @@ public class SATMApplication extends Application
                     stopBlinking.setOnFinished(event -> blinkTimeline.stop());
                     stopBlinking.play();
                     withdrawalFlag = false;
+                    withdrawalString = "";
                 }
 
             }
@@ -829,13 +979,13 @@ public class SATMApplication extends Application
 
     }
 
-    private void printReciept()
+    private void printReceipt()
     {
         // Create a new Stage for the pop-up
         Stage receiptStage = new Stage();
         DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
         String receiptText = "Account: *****0504\n" +
-                             "Original Balance: $" + decimalFormat.format(balance + withdrawal - deposit) + "\n" +
+                             "Original Balance: $" + decimalFormat.format(orgBalance) + "\n" +
                              "Deposits: +$" + decimalFormat.format(deposit) + "\n" +
                              "Withdrawals: -$" + decimalFormat.format(withdrawal) + "\n" +
                              "Total Remaining Balance: $" + decimalFormat.format(balance);
@@ -976,6 +1126,7 @@ public class SATMApplication extends Application
             if (isHeld)
             {
                 timerDone = true;
+                processFlag = true;
                 updateScreenContent("Please removed your ATM card.", Color.DARKGRAY);
                 // Reset the button's style back to the original after a brief moment
                 // Transition to PIN entry after 5 seconds
@@ -1010,6 +1161,7 @@ public class SATMApplication extends Application
             pause.play();
         }
         timerDone = false;
+        //processFlag = false;
     }
 
     private void startHoldTimer2()
@@ -1024,12 +1176,10 @@ public class SATMApplication extends Application
                 PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
                 pause.setOnFinished(e -> updateScreenContent("Processing...\nPlease Wait", Color.DARKGRAY));
                 pause.play();
-
-                String balanceString = "";
+                
                 DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-                balanceString = decimalFormat.format(balance);
                 PauseTransition pause2 = new PauseTransition(Duration.seconds(2.5));
-                String finalBalanceString = balanceString;
+                String finalBalanceString = decimalFormat.format(balance);
                 pause2.setOnFinished(e -> updateScreenContent("Your new balance is:\n\n$" + finalBalanceString +
                                 "\n\nAnother transaction?",
                         Color.rgb(32, 115, 69)));
@@ -1075,6 +1225,7 @@ public class SATMApplication extends Application
             updateScreenContent("Please insert deposit into deposit slot", Color.rgb(32, 115, 69));
             depositFlag = false;
             transactionFlag = true;
+            depositString = "";
         }
 
     }
