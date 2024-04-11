@@ -38,7 +38,7 @@ public class SATMApplication extends Application
     String originalStyle = "-fx-background-color: #282928; -fx-text-fill: #FFFFFF;";
     String clickedStyle = "-fx-background-color: #8F9494FF; -fx-text-fill: #FFFFFF;";
     String pin = "";
-    private String correctPin = "1906";
+    String correctPin = "1906";
     int count;
     double balance = 3500.00;
     double deposit = 0.00;
@@ -68,6 +68,7 @@ public class SATMApplication extends Application
         StackPane root = new StackPane();
 
         Button b1 = new Button("YES");
+        b1.setId("B1");
         b1.setPrefWidth(50);
         b1.setPrefHeight(50);
         b1.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -89,6 +90,7 @@ public class SATMApplication extends Application
 
 
         Button b2 = new Button("NO");
+        b2.setId("B2");
         b2.setPrefWidth(50);
         b2.setPrefHeight(50);
         b2.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -109,21 +111,25 @@ public class SATMApplication extends Application
         });
 
         Button b3 = new Button();
+        b3.setId("B3");
         b3.setPrefWidth(50);
         b3.setPrefHeight(50);
         b3.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
 
         Button b4 = new Button();
+        b4.setId("B4");
         b4.setPrefWidth(50);
         b4.setPrefHeight(50);
         b4.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
 
         Button b5 = new Button();
+        b5.setId("B5");
         b5.setPrefWidth(50);
         b5.setPrefHeight(50);
         b5.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
 
         Button b6 = new Button();
+        b6.setId("B6");
         b6.setPrefWidth(50);
         b6.setPrefHeight(50);
         b6.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -156,6 +162,7 @@ public class SATMApplication extends Application
 
 
         Button b7 = new Button();
+        b7.setId("B7");
         b7.setPrefWidth(50);
         b7.setPrefHeight(50);
         b7.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -179,6 +186,7 @@ public class SATMApplication extends Application
         });
 
         Button b8 = new Button();
+        b8.setId("B8");
         b8.setPrefWidth(50);
         b8.setPrefHeight(50);
         b8.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -237,9 +245,11 @@ public class SATMApplication extends Application
         text.setTextAlignment(TextAlignment.CENTER);
         text.setWrappingWidth(square.getWidth() - 20); // Adjust the wrapping width
         text.setTranslateY(-150);
+        text.setId("WelcomeMessage");
 
         //print receipt button
         Button printReceipt = new Button();
+        printReceipt.setId("printReceiptButton");
         printReceipt.setPrefWidth(150);
         printReceipt.setPrefHeight(20);
         printReceipt.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -249,7 +259,6 @@ public class SATMApplication extends Application
         printReceipt.setTranslateY(55);
         printReceipt.setOnMouseClicked(mouseEvent ->
         {
-
             if(transactionFlag)
             {
                 printReceipt.setStyle(clickedStyle);
@@ -263,6 +272,7 @@ public class SATMApplication extends Application
 
         //numberpad grid pane
         Button n1 = new Button("1");
+        n1.setId("numpad1");
         n1.setPrefWidth(50);
         n1.setPrefHeight(50);
         n1.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -299,6 +309,7 @@ public class SATMApplication extends Application
         });
 
         Button n2 = new Button("2");
+        n2.setId("numpad2");
         n2.setPrefWidth(50);
         n2.setPrefHeight(50);
         n2.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -335,6 +346,7 @@ public class SATMApplication extends Application
         });
 
         Button n3 = new Button("3");
+        n3.setId("numpad3");
         n3.setPrefWidth(50);
         n3.setPrefHeight(50);
         n3.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -371,6 +383,7 @@ public class SATMApplication extends Application
         });
 
         Button n4 = new Button("4");
+        n4.setId("numpad4");
         n4.setPrefWidth(50);
         n4.setPrefHeight(50);
         n4.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -407,6 +420,7 @@ public class SATMApplication extends Application
         });
 
         Button n5 = new Button("5");
+        n5.setId("numpad5");
         n5.setPrefWidth(50);
         n5.setPrefHeight(50);
         n5.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -443,6 +457,7 @@ public class SATMApplication extends Application
         });
 
         Button n6 = new Button("6");
+        n6.setId("numpad6");
         n6.setPrefWidth(50);
         n6.setPrefHeight(50);
         n6.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -479,6 +494,7 @@ public class SATMApplication extends Application
         });
 
         Button n7 = new Button("7");
+        n7.setId("numpad7");
         n7.setPrefWidth(50);
         n7.setPrefHeight(50);
         n7.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -515,6 +531,7 @@ public class SATMApplication extends Application
         });
 
         Button n8 = new Button("8");
+        n8.setId("numpad8");
         n8.setPrefWidth(50);
         n8.setPrefHeight(50);
         n8.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -551,6 +568,7 @@ public class SATMApplication extends Application
         });
 
         Button n9 = new Button("9");
+        n9.setId("numpad9");
         n9.setPrefWidth(50);
         n9.setPrefHeight(50);
         n9.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -587,6 +605,7 @@ public class SATMApplication extends Application
         });
 
         Button n0 = new Button("0");
+        n0.setId("numpad0");
         n0.setPrefWidth(50);
         n0.setPrefHeight(50);
         n0.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -642,11 +661,10 @@ public class SATMApplication extends Application
         numberPad.setTranslateX(445);
         numberPad.setTranslateY(400);
 
-        //Pin Screen Actions
-
 
         //CardSlot Button
         Button cardSlot = new Button();
+        cardSlot.setId("cardSlotButton");
         cardSlot.setPrefWidth(150);
         cardSlot.setPrefHeight(20);
         cardSlot.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -676,6 +694,7 @@ public class SATMApplication extends Application
 
         //Enter Button
         Button enterButton = new Button();
+        enterButton.setId("enterButton");
         enterButton.setPrefWidth(100);
         enterButton.setPrefHeight(20);
         enterButton.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -731,6 +750,7 @@ public class SATMApplication extends Application
 
         //Clear Button
         Button clearButton = new Button();
+        clearButton.setId("clearButton");
         clearButton.setPrefWidth(100);
         clearButton.setPrefHeight(20);
         clearButton.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -756,6 +776,7 @@ public class SATMApplication extends Application
 
         //Cancel Button
         Button cancelButton = new Button();
+        cancelButton.setId("cancelButton");
         cancelButton.setPrefWidth(100);
         cancelButton.setPrefHeight(20);
         cancelButton.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -790,6 +811,7 @@ public class SATMApplication extends Application
 
         //Text for Cash Dispenser
         Text rectText = new Text("Cash Dispenser");
+        rectText.setId("cashDispenser");
         rectText.setFont(new Font("Georgia",18));
         rectText.setFill(Color.WHITE);
         rectText.setTranslateX(-150);
@@ -805,6 +827,7 @@ public class SATMApplication extends Application
 
         //Deposit Slot Button
         Button depositSlot = new Button();
+        depositSlot.setId("depositSlotButton");
         depositSlot.setPrefWidth(250);
         depositSlot.setPrefHeight(30);
         depositSlot.setStyle("-fx-background-color: #282928; -fx-text-fill: #FFFFFF;");
@@ -815,6 +838,10 @@ public class SATMApplication extends Application
         // Set the event handler for the cardSlot button
         depositSlot.setOnMousePressed(mouseEvent ->
         {
+            if(enterCount >= 1)
+            {
+                processFlag = true;
+            }
             if(processFlag)
             {
                 depositSlot.setStyle(clickedStyle);
@@ -1079,12 +1106,14 @@ public class SATMApplication extends Application
 
     void updateScreenContent(String newText, Color backgroundColor) {
         text.setText(newText); // Update the text
+        text.setId("screenContent");
         square.setFill(backgroundColor); // Update the background color of the screen
         // If you have other styles/effects, update them here as needed
     }
 
     void updateTransactionScreen(String newText, Color backgroundColor) {
         text.setText(newText); // Update the text
+        text.setId("transactionScreen");
         text.setTextAlignment(TextAlignment.RIGHT);
         square.setFill(backgroundColor); // Update the background color of the screen
         // If you have other styles/effects, update them here as needed
