@@ -802,6 +802,10 @@ public class SATMApplication extends Application
         cashDispenser.setTranslateY(315);
         cashDispenser.setOnMouseClicked(mouseEvent ->
         {
+            if(enterCount >= 1)
+            {
+                processFlag = true;
+            }
             if(processFlag)
             {
                 updateScreenContent("Your balance is ready for printing. Another transaction?",
@@ -818,6 +822,10 @@ public class SATMApplication extends Application
         rectText.setTranslateY(315);
         rectText.setOnMouseClicked(mouseEvent ->
         {
+            if(enterCount >= 1)
+            {
+                processFlag = true;
+            }
             if(processFlag)
             {
                 updateScreenContent("Your balance is ready for printing. Another transaction?",
