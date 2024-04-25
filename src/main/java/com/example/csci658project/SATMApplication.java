@@ -59,6 +59,7 @@ public class SATMApplication extends Application
     private boolean processFlag = false;
     private Stage receiptWindow;
     private Rectangle cashDispenser;
+    private int withdrawalCount = 0;
     @Override
     public void start(Stage satmFrame) throws Exception
     {
@@ -943,6 +944,17 @@ public class SATMApplication extends Application
         {
             withdrawalString += number;
             numCheck = Double.parseDouble(withdrawalString);
+        }
+        else if ((orgBalance - balance) > 1000)
+        {
+
+            PauseTransition pause2 = new PauseTransition(Duration.seconds(1));
+            pause2.setOnFinished(e -> updateScreenContent("You have reached your daily Limit.\nPlease take your " +
+                            "ATM card.\nHave a nice day.",
+                    Color.rgb(32, 115, 69)));
+            pause2.play();
+
+
         }
         else
         {

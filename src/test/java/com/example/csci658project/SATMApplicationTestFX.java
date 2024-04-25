@@ -219,91 +219,102 @@ public class SATMApplicationTestFX extends ApplicationTest
 //
 //    }
 
-    @Test
-    public void deposit()
-    {
-        //insert card
-        moveTo("#cardSlotButton");
-
-        press(MouseButton.PRIMARY);
-
-        // Pause for 10 seconds to simulate holding the button down
-        WaitForAsyncUtils.sleep(10, TimeUnit.SECONDS);
-
-        // Release the mouse button
-        release(MouseButton.PRIMARY);
-
-        //input pin
-        clickOn("#numpad1");
-        clickOn("#numpad9");
-        clickOn("#numpad0");
-        clickOn("#numpad6");
-
-        // After pressing the numbers, simulate clicking the Enter button
-        verifyThat("#enterButton", isEnabled());
-        clickOn("#enterButton");
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        //press deposit button
-        verifyThat("#B7", isEnabled());
-        clickOn("#B7");
-
-        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
-
-        // verify deposit screen
-        verifyThat("#screenContent", node -> {
-            if (node instanceof Text) {
-                Text textNode = (Text) node;
-                return textNode.getText().equals("Enter amount you want to deposit.");
-            }
-            return false;
-        });
-
-        WaitForAsyncUtils.sleep(2, TimeUnit.SECONDS);
-
-        //enter the deposit
-        clickOn("#numpad1");
-        clickOn("#numpad9");
-        clickOn("#numpad0");
-
-        // hit enter
-        verifyThat("#enterButton", isEnabled());
-        clickOn("#enterButton");
-
-        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
-
-        //verify insert deposit
-        verifyThat("#screenContent", node -> {
-            if (node instanceof Text) {
-                Text textNode = (Text) node;
-                return textNode.getText().equals("Please insert deposit into deposit slot");
-            }
-            return false;
-        });
-
-        //insert deposit
-        verifyThat("#depositSlotButton", isEnabled());
-        moveTo("#depositSlotButton");
-        press(MouseButton.PRIMARY);
-
-        WaitForAsyncUtils.sleep(7, TimeUnit.SECONDS);
-
-        verifyThat("#screenContent", TextMatchers.hasText("Counting your deposit.\nPlease wait."));
-
-        verifyThat("#screenContent", TextMatchers.hasText("Deposit Received!"));
-
-        // Release the mouse button
-        release(MouseButton.PRIMARY);
-
-        verifyThat("#screenContent", TextMatchers.hasText("Processing...\nPlease Wait."));
-
-        //WaitForAsyncUtils.waitForFxEvents();
-        WaitForAsyncUtils.waitForFxEvents();
-
-        verifyThat("#screenContent", TextMatchers.hasText("Your new balance is:\n\n$3690.00\n\nAnother transaction?"));
-
-    }
+//    @Test
+//    public void deposit()
+//    {
+//        //insert card
+//        moveTo("#cardSlotButton");
+//
+//        press(MouseButton.PRIMARY);
+//
+//        // Pause for 10 seconds to simulate holding the button down
+//        WaitForAsyncUtils.sleep(10, TimeUnit.SECONDS);
+//
+//        // Release the mouse button
+//        release(MouseButton.PRIMARY);
+//
+//        //input pin
+//        clickOn("#numpad1");
+//        clickOn("#numpad9");
+//        clickOn("#numpad0");
+//        clickOn("#numpad6");
+//
+//        // After pressing the numbers, simulate clicking the Enter button
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        //press deposit button
+//        verifyThat("#B7", isEnabled());
+//        clickOn("#B7");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        // verify deposit screen
+//        verifyThat("#screenContent", node -> {
+//            if (node instanceof Text) {
+//                Text textNode = (Text) node;
+//                return textNode.getText().equals("Enter amount you want to deposit.");
+//            }
+//            return false;
+//        });
+//
+//        WaitForAsyncUtils.sleep(2, TimeUnit.SECONDS);
+//
+//        //enter the deposit
+//        clickOn("#numpad1");
+//        clickOn("#numpad9");
+//        clickOn("#numpad0");
+//
+//        // hit enter
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        //verify insert deposit
+//        verifyThat("#screenContent", node -> {
+//            if (node instanceof Text) {
+//                Text textNode = (Text) node;
+//                return textNode.getText().equals("Please insert deposit into deposit slot");
+//            }
+//            return false;
+//        });
+//
+//        //insert deposit
+//        verifyThat("#depositSlotButton", isEnabled());
+//        moveTo("#depositSlotButton");
+//        press(MouseButton.PRIMARY);
+//
+//        WaitForAsyncUtils.sleep(7, TimeUnit.SECONDS);
+//
+//
+//
+//        // Release the mouse button
+//        release(MouseButton.PRIMARY);
+//
+//        //WaitForAsyncUtils.waitForFxEvents();
+//
+//        //verifyThat("#screenContent", TextMatchers.hasText("Counting your deposit.\nPlease wait."));
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        verifyThat("#screenContent", TextMatchers.hasText("Deposit Received!"));
+//
+//
+//
+//        verifyThat("#screenContent", TextMatchers.hasText("Processing...\nPlease Wait"));
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        //verifyThat("#screenContent", TextMatchers.hasText("Deposit Received!"));
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        verifyThat("#screenContent", TextMatchers.hasText("Your new balance is:\n\n$3690.00\n\nAnother transaction?"));
+//
+//    }
 
 //    @Test
 //    public void depositSlotJammed()
@@ -457,48 +468,231 @@ public class SATMApplicationTestFX extends ApplicationTest
 //
 //    }
 
-
-
-    private void showNextTestPopup(String nextTestName, Runnable nextTest) {
-        // Pause the test thread
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Create the stage for the pop-up
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-
-        // Create UI components
-        VBox layout = new VBox(10);
-        Text text = new Text("Next test: " + nextTestName);
-        Button nextButton = new Button("Next");
-
-        nextButton.setOnAction(event -> {
-            // Run the next test when Next is clicked
-            nextTest.run();
-            popupStage.close();
-        });
-
-        layout.getChildren().addAll(text, nextButton);
-        layout.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(layout, 300, 200);
-        popupStage.setScene(scene);
-        popupStage.showAndWait();
-    }
-
-
-
 //    @Test
-//    public void testCardInsertion() throws Exception {
-//        // Wait until the cardSlotButton is visible and ready to be clicked.
+//    public void withdrawalNotM20()
+//    {
+//        //insert card
+//        moveTo("#cardSlotButton");
+//
+//        press(MouseButton.PRIMARY);
+//
+//        // Pause for 10 seconds to simulate holding the button down
+//        WaitForAsyncUtils.sleep(10, TimeUnit.SECONDS);
+//
+//        // Release the mouse button
+//        release(MouseButton.PRIMARY);
+//
+//        //input pin
+//        clickOn("#numpad1");
+//        clickOn("#numpad9");
+//        clickOn("#numpad0");
+//        clickOn("#numpad6");
+//
+//        // After pressing the numbers, simulate clicking the Enter button
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
 //        WaitForAsyncUtils.waitForFxEvents();
 //
-//        // Click on the cardSlotButton.
-//        clickOn("#cardSlotButton");
+//        //press deposit button
+//        verifyThat("#B8", isEnabled());
+//        clickOn("#B8");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        // verify deposit screen
+//        verifyThat("#screenContent", node -> {
+//            if (node instanceof Text) {
+//                Text textNode = (Text) node;
+//                return textNode.getText().equals("Enter amount.\nWithdrawals must be multiples of $10");
+//            }
+//            return false;
+//        });
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        //enter the deposit
+//        clickOn("#numpad1");
+//        clickOn("#numpad9");
+//        clickOn("#numpad5");
+//
+//        // hit enter
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        verifyThat("#screenContent", TextMatchers.hasText("Machine can only dispense $10 notes."));
 //    }
 
 
+//    @Test
+//    public void notEnoughFunds()
+//    {
+//        //insert card
+//        moveTo("#cardSlotButton");
+//
+//        press(MouseButton.PRIMARY);
+//
+//        // Pause for 10 seconds to simulate holding the button down
+//        WaitForAsyncUtils.sleep(10, TimeUnit.SECONDS);
+//
+//        // Release the mouse button
+//        release(MouseButton.PRIMARY);
+//
+//        //input pin
+//        clickOn("#numpad1");
+//        clickOn("#numpad9");
+//        clickOn("#numpad0");
+//        clickOn("#numpad6");
+//
+//        // After pressing the numbers, simulate clicking the Enter button
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        //press deposit button
+//        verifyThat("#B8", isEnabled());
+//        clickOn("#B8");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        // verify deposit screen
+//        verifyThat("#screenContent", node -> {
+//            if (node instanceof Text) {
+//                Text textNode = (Text) node;
+//                return textNode.getText().equals("Enter amount.\nWithdrawals must be multiples of $10");
+//            }
+//            return false;
+//        });
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        //enter the deposit
+//        clickOn("#numpad4");
+//        clickOn("#numpad9");
+//        clickOn("#numpad0");
+//        clickOn("#numpad0");
+//
+//        // hit enter
+//        verifyThat("#enterButton", isEnabled());
+//        clickOn("#enterButton");
+//
+//        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+//
+//        verifyThat("#screenContent", TextMatchers.hasText("Insufficient Funds!\nPlease enter a new amount."));
+//
+//    }
+
+    @Test
+    public void withdrawalLimitExceeded()
+    {
+        //insert card
+        moveTo("#cardSlotButton");
+
+        press(MouseButton.PRIMARY);
+
+        // Pause for 10 seconds to simulate holding the button down
+        WaitForAsyncUtils.sleep(10, TimeUnit.SECONDS);
+
+        // Release the mouse button
+        release(MouseButton.PRIMARY);
+
+        //input pin
+        clickOn("#numpad1");
+        clickOn("#numpad9");
+        clickOn("#numpad0");
+        clickOn("#numpad6");
+
+        // After pressing the numbers, simulate clicking the Enter button
+        verifyThat("#enterButton", isEnabled());
+        clickOn("#enterButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        //press deposit button
+        verifyThat("#B8", isEnabled());
+        clickOn("#B8");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        // verify deposit screen
+        verifyThat("#screenContent", node -> {
+            if (node instanceof Text) {
+                Text textNode = (Text) node;
+                return textNode.getText().equals("Enter amount.\nWithdrawals must be multiples of $10");
+            }
+            return false;
+        });
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        //enter the deposit
+        clickOn("#numpad1");
+        clickOn("#numpad9");
+        clickOn("#numpad2");
+        clickOn("#numpad0");
+
+        // hit enter
+        verifyThat("#enterButton", isEnabled());
+        clickOn("#enterButton");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        verifyThat("#screenContent", TextMatchers.hasText("Your balance is being updated. " +
+                "Please take cash from dispenser"));
+
+        //insert deposit
+        verifyThat("#cashDispenser", isEnabled());
+        moveTo("#cashDispenser");
+        clickOn(MouseButton.PRIMARY);
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        verifyThat("#screenContent", TextMatchers.hasText("Your balance is ready for printing. Another transaction?"));
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        //press yes button
+        verifyThat("#B1", isEnabled());
+        clickOn("#B1");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        //press deposit button
+        verifyThat("#B8", isEnabled());
+        clickOn("#B8");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        // verify deposit screen
+        verifyThat("#screenContent", node -> {
+            if (node instanceof Text) {
+                Text textNode = (Text) node;
+                return textNode.getText().equals("Enter amount.\nWithdrawals must be multiples of $10");
+            }
+            return false;
+        });
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        //enter the deposit
+        clickOn("#numpad1");
+        clickOn("#numpad9");
+        clickOn("#numpad2");
+        clickOn("#numpad0");
+
+        // hit enter
+        verifyThat("#enterButton", isEnabled());
+        clickOn("#enterButton");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+
+        verifyThat("#screenContent", TextMatchers.hasText("You have reached your daily Limit.\nPlease take your " +
+                "ATM card.\nHave a nice day."));
+
+    }
 
 
-    // More tests go here
 }
